@@ -1,0 +1,22 @@
+[Unit]
+Description=Consul Agent (BootStrap)
+After=network.target
+
+[Service]
+Restart=on-failure
+
+User=appuser
+Group=appgroup
+
+Environment=HOME=/appdata/consulv1
+EnvironmentFile=/appdata/consulv1/env
+WorkingDirectory=/appdata/consulv1
+
+ExecStartPre=/bin/echo IP=`/bin/hostname --ip-address` > /appdata/consulv1/env
+ExecStart=/appdata/consulv1/consul agent -ui -config-dir=/appdata/consulv1/config -client $IP -bind $IP
+ExecReload=/bin/kill -USR1 $MAINPID
+
+PermissionsStartOnly=true
+
+[Install]
+WantedBy=multi-user.target
